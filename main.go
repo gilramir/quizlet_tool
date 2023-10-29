@@ -11,6 +11,7 @@ import (
 
 type Options struct {
 	Filename string
+	Prefix   string
 }
 
 type Program struct {
@@ -21,7 +22,7 @@ func (s *Program) run() error {
 	ap := s.build_args()
 	ap.Parse()
 
-	return s.convert()
+	return s.convert(s.opts.Filename, s.opts.Prefix)
 }
 
 func (s *Program) build_args() *argparse.ArgumentParser {
@@ -30,12 +31,15 @@ func (s *Program) build_args() *argparse.ArgumentParser {
 		Values:      &s.opts,
 	})
 
-	/*
-		ap.Add(&argparse.Argument{
-			Name: "filename",
-			Help: "The input filename",
-		})
-	*/
+	ap.Add(&argparse.Argument{
+		Name: "filename",
+		Help: "The input filename",
+	})
+
+	ap.Add(&argparse.Argument{
+		Name: "prefix",
+		Help: "The output prefix",
+	})
 
 	return ap
 }
