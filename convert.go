@@ -154,7 +154,7 @@ func (s *InputParser) parse(filename string) error {
 			var found bool
 			var lhs string
 			var rhs string
-			// Do we have a leaste 22 spaces as the separator
+			// Do we have a least 22 spaces as the separator
 			if !found {
 				i := strings.Index(line, "  ")
 				if i != -1 {
@@ -177,10 +177,10 @@ func (s *InputParser) parse(filename string) error {
 			if !found {
 				paren_i := strings.Index(line, "(")
 				paren_j := strings.LastIndex(line, ")")
-				//fmt.Printf("line: %s ; paren_i=%d paren_j=%d\n", line, paren_i, paren_j)
 				if paren_i != -1 && paren_j != -1 && paren_j > paren_i {
 					lhs = strings.TrimSpace(line[:paren_i])
 					rhs = strings.TrimSpace(line[paren_i+1 : paren_j])
+					//					fmt.Printf("line: %s ; paren_i=%d paren_j=%d rhs=%s\n", line, paren_i, paren_j, rhs)
 					found = true
 				}
 			}
@@ -188,6 +188,13 @@ func (s *InputParser) parse(filename string) error {
 			if !found {
 				panic(fmt.Sprintf("Expected a multi-space separator on line %d, saw: %s",
 					lineno, line))
+			}
+
+			// If we found multispace, or colon, there still might
+			// be parens, but only check at the begrinning
+			if rhs[0] == byte('(') && rhs[len(rhs)-1] == byte(')') {
+				rhs = strings.TrimSpace(rhs[1 : len(rhs)-1])
+				fmt.Printf("line: %s ; rhs=%s\n", line, rhs)
 			}
 			s.thisLesson.Add(lhs, rhs)
 		}
